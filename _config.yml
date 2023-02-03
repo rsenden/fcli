@@ -17,11 +17,11 @@ defaults:
   - scope:
       path: "dev_*/*.html"
     values:
-      layout: manpage
+      layout: "manpage"
   - scope:
       path: "v*/*.html"
     values:
-      layout: manpage
+      layout: "manpage"
 
 # Build settings
 markdown: kramdown
