@@ -14,14 +14,6 @@ defaults:
       path: "v*/fcli.html"
     values:
       manpage_release: true
-  - scope:
-      path: "dev_*/*.html"
-    values:
-      layout: "manpage"
-  - scope:
-      path: "v*/*.html"
-    values:
-      layout: "manpage"
 
 # Build settings
 markdown: kramdown
