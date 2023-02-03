@@ -235,13 +235,32 @@ task generateManpageAsciiDoc(type: JavaExec) {
     args mainClassName, "--outdir=${project.buildDir}/generated-picocli-docs", "-v"
 }
 
-task asciiDoctorMapPageAndHtml(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
+task copyPicocliDocsAndIndex(type: Copy) {
+	dependsOn(generateManpageAsciiDoc)
+	from "${project.buildDir}/generated-picocli-docs"
+	from("${projectDir}/doc-resources/jekyll") {
+        include "index.adoc"
+    }
+    into "${project.buildDir}/generated-asciidoc-with-index"
+}
+
+task asciiDoctorManPage(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
     dependsOn(generateManpageAsciiDoc)
     sourceDir = file("${project.buildDir}/generated-picocli-docs")
-    outputDir = file("${project.buildDir}/docs")
+    outputDir = file("${project.buildDir}/generated-docs/manpage")
     logDocuments = true
     outputOptions {
-        backends = ['manpage', 'html5']
+        backends = ['manpage']
+    }
+}
+
+task asciiDoctorHtml(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
+    dependsOn(copyPicocliDocsAndIndex)
+    sourceDir = file("${project.buildDir}/generated-asciidoc-with-index")
+    outputDir = file("${project.buildDir}/generated-docs/html5")
+    logDocuments = true
+    outputOptions {
+        backends = ['html5']
     }
     attributes = [
             'doctype'      : 'article',
@@ -251,9 +270,9 @@ task asciiDoctorMapPageAndHtml(type: org.asciidoctor.gradle.jvm.AsciidoctorTask)
 }
 
 task asciidoctorJekyll(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
-	dependsOn(generateManpageAsciiDoc)
-    sourceDir = file("${project.buildDir}/generated-picocli-docs")
-    outputDir = file("${project.buildDir}/docs-jekyll")
+	dependsOn(copyPicocliDocsAndIndex)
+    sourceDir = file("${project.buildDir}/generated-asciidoc-with-index")
+    outputDir = file("${project.buildDir}/generated-docs/jekyll")
     logDocuments = true
     outputOptions {
         backends = ['html5']
@@ -264,29 +283,29 @@ task asciidoctorJekyll(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
             'sectanchors'   : 'true',
     ]
     options = [
-    	'template_dirs': [new File('${project.rootDir}/doc-resources/jekyll/asciidoc/templates').absolutePath]
+    	'template_dirs': [new File("${project.rootDir}/doc-resources/jekyll/asciidoc/templates").absolutePath]
     ]
 }
 
 tasks.register('distDocsHtml5', Zip) {
-    dependsOn 'asciiDoctorMapPageAndHtml'
+    dependsOn 'asciiDoctorHtml'
     archiveFileName = "docs-html.zip"
     destinationDirectory = layout.buildDirectory.dir('dist')
-    from layout.buildDirectory.dir("docs/html5")
+    from layout.buildDirectory.dir("generated-docs/html5")
 }
 
 tasks.register('distDocsManPage', Zip) {
-    dependsOn 'asciiDoctorMapPageAndHtml'
+    dependsOn 'asciiDoctorManPage'
     archiveFileName = "docs-manpage.zip"
     destinationDirectory = layout.buildDirectory.dir('dist')
-    from layout.buildDirectory.dir("docs/manpage")
+    from layout.buildDirectory.dir("generated-docs/manpage")
 }
 
 tasks.register('distDocsJekyll', Zip) {
     dependsOn 'asciidoctorJekyll'
     archiveFileName = "docs-jekyll.zip"
     destinationDirectory = layout.buildDirectory.dir('dist')
-    from layout.buildDirectory.dir("docs-jekyll")
+    from layout.buildDirectory.dir("generated-docs/jekyll")
 }
 
 task distDocs {
