@@ -305,7 +305,7 @@ jobs:
           # while leaving documentation for other tags/branches intact (as checked out above)
           rm -rf "${dir}"
           mkdir -p "${dir}"
-          unzip artifact/docs-html.zip -d "${dir}"
+          unzip artifact/docs-jekyll.zip -d "${dir}"
           
       - name: Deploy documentation
         uses: peaceiris/actions-gh-pages@v3
