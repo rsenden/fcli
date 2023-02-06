@@ -232,23 +232,23 @@ task generateManpageAsciiDoc(type: JavaExec) {
     description = "Generate AsciiDoc manpage"
     classpath(configurations.runtimeClasspath, configurations.annotationProcessor, sourceSets.main.runtimeClasspath)
     main 'picocli.codegen.docgen.manpage.ManPageGenerator'
-    args mainClassName, "--outdir=${project.buildDir}/generated-picocli-docs", "-v"
+    args mainClassName, "--outdir=${project.buildDir}/generated-docs/src/manpage", "-v"
 }
 
-task copyPicocliDocsAndIndex(type: Copy) {
-	dependsOn(generateManpageAsciiDoc)
-	into "${project.buildDir}/generated-asciidoc-with-index"
+task copyStaticAsciiDoc(type: Copy) {
+	into "${project.buildDir}/generated-docs/src"
 	from("${projectDir}/doc-resources/asciidoc") {
         include "*.adoc"
     }
-    into("manpage") {
-		from "${project.buildDir}/generated-picocli-docs"
-	}
+}
+
+task prepareAsciiDoc {
+    dependsOn 'generateManpageAsciiDoc', 'copyStaticAsciiDoc'
 }
 
 task asciiDoctorManPage(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
-    dependsOn(generateManpageAsciiDoc)
-    sourceDir = file("${project.buildDir}/generated-picocli-docs")
+    dependsOn(prepareAsciiDoc)
+    sourceDir = file("${project.buildDir}/generated-docs/src/manpage")
     outputDir = file("${project.buildDir}/generated-docs/manpage")
     logDocuments = true
     outputOptions {
@@ -257,17 +257,18 @@ task asciiDoctorManPage(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
 }
 
 task asciiDoctorHtml(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
-    dependsOn(copyPicocliDocsAndIndex)
-    sourceDir = file("${project.buildDir}/generated-asciidoc-with-index")
+    dependsOn(prepareAsciiDoc)
+    sourceDir = file("${project.buildDir}/generated-docs/src")
     outputDir = file("${project.buildDir}/generated-docs/html5")
     logDocuments = true
     outputOptions {
         backends = ['html5']
     }
     attributes = [
-            'doctype'     : 'article',
             'toc'         : 'left',
             'sectanchors' : 'true',
+            'docinfo'     : 'shared',
+            'docinfodir'  : new File("${project.rootDir}/doc-resources/asciidoc/docinfo").absolutePath,
             'jekyll'      : false
     ]
     options = [
@@ -276,17 +277,18 @@ task asciiDoctorHtml(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
 }
 
 task asciidoctorJekyll(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
-	dependsOn(copyPicocliDocsAndIndex)
-    sourceDir = file("${project.buildDir}/generated-asciidoc-with-index")
+	dependsOn(prepareAsciiDoc)
+    sourceDir = file("${project.buildDir}/generated-docs/src")
     outputDir = file("${project.buildDir}/generated-docs/jekyll")
     logDocuments = true
     outputOptions {
         backends = ['html5']
     }
     attributes = [
-            'doctype'     : 'article',
             'toc'         : 'left',
             'sectanchors' : 'true',
+            'docinfo'     : 'shared',
+            'docinfodir'  : new File("${project.rootDir}/doc-resources/asciidoc/docinfo").absolutePath,
             'jekyll'      : true
     ]
     options = [
