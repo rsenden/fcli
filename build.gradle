@@ -237,11 +237,13 @@ task generateManpageAsciiDoc(type: JavaExec) {
 
 task copyPicocliDocsAndIndex(type: Copy) {
 	dependsOn(generateManpageAsciiDoc)
-	from "${project.buildDir}/generated-picocli-docs"
-	from("${projectDir}/doc-resources/jekyll") {
-        include "index.adoc"
+	into "${project.buildDir}/generated-asciidoc-with-index"
+	from("${projectDir}/doc-resources/asciidoc") {
+        include "*.adoc"
     }
-    into "${project.buildDir}/generated-asciidoc-with-index"
+    into("manpage") {
+		from "${project.buildDir}/generated-picocli-docs"
+	}
 }
 
 task asciiDoctorManPage(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
@@ -263,9 +265,13 @@ task asciiDoctorHtml(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
         backends = ['html5']
     }
     attributes = [
-            'doctype'      : 'article',
-            'toc'          : 'left',
-            'sectanchors'   : 'true',
+            'doctype'     : 'article',
+            'toc'         : 'left',
+            'sectanchors' : 'true',
+            'jekyll'      : false
+    ]
+    options = [
+    	'template_dirs': [new File("${project.rootDir}/doc-resources/asciidoc/templates").absolutePath]
     ]
 }
 
@@ -278,12 +284,13 @@ task asciidoctorJekyll(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
         backends = ['html5']
     }
     attributes = [
-            'doctype'      : 'article',
-            'toc'          : 'left',
-            'sectanchors'   : 'true',
+            'doctype'     : 'article',
+            'toc'         : 'left',
+            'sectanchors' : 'true',
+            'jekyll'      : true
     ]
     options = [
-    	'template_dirs': [new File("${project.rootDir}/doc-resources/jekyll/asciidoc/templates").absolutePath]
+    	'template_dirs': [new File("${project.rootDir}/doc-resources/asciidoc/templates").absolutePath]
     ]
 }
 

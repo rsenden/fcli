@@ -265,7 +265,7 @@ fcli config variable contents list myVersions -o 'expr={id}\n' --output-to-file 
 
 == Manual Pages
 
-Manual pages for individual fcli releases can be downloaded from the Assets sections on the https://github.com/fortify-ps/fcli/releases[fcli releases page], or can be viewed here: link:fcli.html[Manual Pages]
+Manual pages for individual fcli releases can be downloaded from the Assets sections on the https://github.com/fortify-ps/fcli/releases[fcli releases page], or can be viewed here: link:manpage/fcli.html[Manual Pages]
 
 == Troubleshooting
 
