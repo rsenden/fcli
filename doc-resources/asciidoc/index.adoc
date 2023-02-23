@@ -1,4 +1,15 @@
 = Fortify CLI (fcli) Installation & Usage
+:favicon: ./img/mf_fortify_bluesquare_logo.ico
+:linkcss:
+:copycss:
+:stylesheet: site.css
+:stylesdir: css
+:source-highlighter: highlightjs
+:highlightjsdir: highlight
+:highlightjs-theme: github-dark
+:icons: font
+:iconfont-remote!:
+:iconfont-name: font-awesome
 
 The fcli utility can be used to interact with various Fortify products, like Fortify on Demand (FoD), Software Security Center (SSC), ScanCentral SAST and ScanCentral DAST. This document describes installation and general usage of fcli. For a full listing of fcli commands and corresponding command line options, please see the
 man-pages corresponding to the fcli version that you are using, as listed in the link:#_manual_pages[Manual Pages] section.
@@ -9,7 +20,7 @@ Some of the fcli highlights:
 * link:#_installation[Both plain Java and native platform binaries for Windows&#44; Linux and Mac available] 
 * link:#_command_structure[Modular command structure], making it easy to focus on particular tasks 
 * link:#_o_output[Rich output formats]; save command output in JSON, CSV, XML or plain-text formats 
-* link:#_session_management[Session-based]; no need to pass URL’s and credentials on every individual fcli invocation 
+* link:#_session_management[Session-based]; no need to pass URL's and credentials on every individual fcli invocation
 * Support for configuring option values through link:#_environment_variables[environment variables] 
 * Support for link:#_fcli_variables[fcli variables]; pass data between fcli commands
 
@@ -33,7 +44,7 @@ The following Fortify products are currently supported by fcli:
 
 == Installation
 
-Download bundles for fcli are available on the https://github.com/fortify-ps/fcli/releases[Releases] page, containing both development releases (named `+Development Release - <branch> branch+`) and final releases. In general, the use of a final release is recommended, unless you want to use any functionality that hasn’t made it into a final release yet.
+Download bundles for fcli are available on the https://github.com/fortify-ps/fcli/releases[Releases] page, containing both development releases (named `+Development Release - <branch> branch+`) and final releases. In general, the use of a final release is recommended, unless you want to use any functionality that hasn't made it into a final release yet.
 
 Each release comes with a list of assets: 
 
@@ -48,7 +59,7 @@ found, please try with the Java version a s it may be an issue specific to the n
 * `+fcli-thirdparty.zip+`: Third-party licenses and sources for license purposes; usually no need to download 
 * `+LICENSE.TXT+` & `+README.md+`: Some generic information and license for fcli
 
-Please note that when publishing a new release, it may take up to 30-60 minutes before release assets are posted. If the latest release doesn’t show any of the assets listed above, please check again in 30-60 minutes. If you encounter a release without these assets after waiting for 60 minutes, please consider submitting an issue on the https://github.com/fortify-ps/fcli/issues[fcli issue tracker].
+Please note that when publishing a new release, it may take up to 30-60 minutes before release assets are posted. If the latest release doesn't show any of the assets listed above, please check again in 30-60 minutes. If you encounter a release without these assets after waiting for 60 minutes, please consider submitting an issue on the https://github.com/fortify-ps/fcli/issues[fcli issue tracker].
 
 To install one of the binary distributions of fcli: 
 
@@ -68,33 +79,33 @@ Fcli provides a product-oriented command structure, with each product represente
 
 To see what top-level fcli commands are available, you can use the `+fcli --help+` command. You can drill down into the command tree to see what sub-commands are available within a particular parent command, for example by running `+fcli ssc --help+` to see all `+fcli ssc+` sub-commands, or `+fcli ssc session --help+` to see all SSC session management commands.
 
-If you don’t have fcli up and running yet, you can also refer to the downloadable or online manual pages; refer to the link:#_manual_pages[Manual Pages] section for more information.
+If you don't have fcli up and running yet, you can also refer to the downloadable or online manual pages; refer to the link:#_manual_pages[Manual Pages] section for more information.
 
 == Common Options
 
 The following sections describe common options that are available on (most) fcli commands.
 
-=== -h | –help
+=== -h | -help
 
 This option can be used on every fcli (sub-)command to view usage information for that command. Usage information usually shows the command synopsis, a description of the functionality provided by the command, and a description of each command line option or parameter accepted by the command.
 
-=== –env-prefix
+=== -env-prefix
 
 As described in the link:#_environment_variables[Environment Variables] section, default option and parameter values can be retrieved from environment variables starting with `+FCLI_DEFAULT+`. This option allows for configuring a different environment variable prefix. This may be useful if, for example, you want to login to multiple instances of the same system using environment variables. For example, when running `+fcli ssc session login --env-prefix PROD+`, fcli will look for environment variables like `+PROD_SSC_URL+` instead of `+FCLI_DEFAULT_SSC_URL+`.
 
 Note that a default value for the `+--env-prefix+` option itself can be specified through an `+FCLI_DEFAULT_ENV_PREFIX+` environment variable, for example if you want to globally override the `+FCLI_DEFAULT+` prefix.
 
-=== –log-level
+=== -log-level
 
 This option can be used on every fcli (sub-)command to specify the fcli log level; see the help output for a list of allowed levels. Note that this option also requires the `+--log-file+` option to be specified,
 otherwise no log will be written.
 
-=== –log-file
+=== -log-file
 
 This option can be used on every fcli (sub-)command to specify the file to which to output log data. If not specified, currently no log data will be written, although future versions may specify a default log file
 location in the fcli home folder.
 
-=== -o | –output
+=== -o | -output
 
 Available on virtually all (leaf) commands that output data, this option can be used to specify the output format. Fcli supports a wide variety of output formats, like `+table+`, `+csv+`, `+json+`, `+xml+`, and `+tree+` formats, allowing for both human-readable output or output suitable for automations. The `+csv-plain+` and `+table-plain+` output formats produce CSV or table output without headers. The `+*-flat+`
 output formats produce a flattened view of the output data, potentially making it easier to process that data without having to navigate through an object tree. For a full list of output formats supported by your fcli
@@ -112,21 +123,21 @@ evaluating the given expression. If necessary, the expression should explicitly 
 * `+-o json-properties+` List all JSON properties returned by the current command, which can be used
 on options that take JSON propert ies as input, like output expressions (`+-o expr={prop}+`), properties to include in the output (`+-o table=prop1,prop2+`), queries (`+-q prop1=value1+`), and fcli variables (`+--store var:prop1,prop2+` & `+{?var:prop1}+`). Two important notes about this output format: 
 ** The command will be executed as specified, so be careful when using this output option on any command
-that changes state (delete/update/create/…) * On some commands, the list of available JSON properties may vary depending on command line options. For example, when a query returns no records, then `+-o json-properties+` will not output any properties. Likewise, a command may provide options for including additional data for each record; the corresponding JSON properties will only be shown if `+-o json-properties+` is used in combination with these options that load additional data.
+that changes state (delete/update/create/...) * On some commands, the list of available JSON properties may vary depending on command line options. For example, when a query returns no records, then `+-o json-properties+` will not output any properties. Likewise, a command may provide options for including additional data for each record; the corresponding JSON properties will only be shown if `+-o json-properties+` is used in combination with these options that load additional data.
 
-=== –output-to-file
+=== -output-to-file
 
 Available on virtually all (leaf) commands that output data, this option can be used to write the command output data to a file, in the format specified by the `+--output+` option listed above. In some cases, this may be more convenient than redirecting the output to a file. For example, although currently not implemented, fcli could potentially skip creating the output file if there is no output data or if an error occurs. Also, for commands that output status updates, like `+wait-for+` commands, the `+--output-to-file+` option allows for status updates to be written to standard output while the final output of the command will be written to the file specified.
 
-=== –store
+=== -store
 
 Available on virtually all (leaf) commands that output data, this option can be used to store command output data in an fcli variable. For more details, see the link:#_fcli_variables[Fcli Variables] section.
 
-=== -q | –query
+=== -q | -query
 
-Available on most `+list+` commands and some other commands, this option allows for querying the output data, outputting only records that match the given query or queries. For now, only equals-based matching is supported; future fcli versions may provide additional matching options. General format is `+-q <json-property>=<value>+`; the list of JSON properties available for matching can be found by executing the same command with the `+-o json-properties+` option; see link:++#-o--output++[-o | –output] for details.
+Available on most `+list+` commands and some other commands, this option allows for querying the output data, outputting only records that match the given query or queries. For now, only equals-based matching is supported; future fcli versions may provide additional matching options. General format is `+-q <json-property>=<value>+`; the list of JSON properties available for matching can be found by executing the same command with the `+-o json-properties+` option; see link:++#-o | --output++[-o | –output] for details.
 
-=== –session
+=== -session
 
 Available on virtually all commands that interact with a target system, this option allows for specifying a session name. For more details, see the link:#_session_management[Session Management] section.
 
@@ -141,7 +152,7 @@ fcli ssc appversion list
 fcli ssc session logout --user <user> --password <password>
 ----
 
-For interactive use, you can choose to keep the session open until it expires (expiration period depends on target system and login method). For pipeline use or other automation scenarios, it is highly recommended to issue a `+session logout+` command when no further interaction with the target system is required, to allow for any client-side and server-side cleanup to be performed. For example, upon logging in to SSC with user credentials, fcli will generate a `+UnifiedLoginToken+`, which will be invalidated when the `+ssc session logout+` is being run. If you have many (frequently executed) pipelines that interact with SSC, and you don’t run the `+ssc session logout+` command when the pipeline finishes, you risk exhausting SSC’s limit on active tokens. In addition, the `+logout+` commands will remove the session details like URL and authentication tokens from the client system, and perform other cleanup like removing predefined fcli variables (see link:#_fcli_variables[Fcli Variables]).
+For interactive use, you can choose to keep the session open until it expires (expiration period depends on target system and login method). For pipeline use or other automation scenarios, it is highly recommended to issue a `+session logout+` command when no further interaction with the target system is required, to allow for any client-side and server-side cleanup to be performed. For example, upon logging in to SSC with user credentials, fcli will generate a `+UnifiedLoginToken+`, which will be invalidated when the `+ssc session logout+` is being run. If you have many (frequently executed) pipelines that interact with SSC, and you don't run the `+ssc session logout+` command when the pipeline finishes, you risk exhausting SSC's limit on active tokens. In addition, the `+logout+` commands will remove the session details like URL and authentication tokens from the client system, and perform other cleanup like removing predefined fcli variables (see link:#_fcli_variables[Fcli Variables]).
 
 For product modules that support it, like SSC or ScanCentral DAST, it is also highly recommended to use token-based authentication rather than username/password-based authentication when incorporating fcli into pipelines or other automation tasks. This will avoid creation of a temporary token as described above, but also allows for better access control based on token permissions. Similarly, for systems that support Personal Access tokens, like FoD, it is highly recommended to utilize a Personal Access Token rather than user password. Note however that depending on (personal access) token permissions, not all fcli functionality may be available. In particular, even the least restrictive SSC `+CIToken+` may not provide access to all endpoints covered by fcli. If you need access to functionality not covered by `+CIToken+`, you may need to define a custom token definition, but this can only be done on self-hosted SSC environments, not on Fortify Hosted. If all else fails, you may need to revert to username/password-based authentication to utilize the short-lived  `+UnifiedLoginToken+`.
 
@@ -156,7 +167,7 @@ Fcli supports named sessions, allowing you to have multiple open sessions for a 
 
 === Session Storage
 
-To keep session state between fcli invocations, fcli stores session data like URL and authentication tokens in the link:#_fcli_home_folder[Fcli Home Folder]. To reduce the risk of unauthorized access to this sensitive data, fcli encrypts the session data files. However, this is not bullet-proof, as the encryption key and algorithm can be easily viewed in fcli source code. As such, it is recommended to ensure file permissions on the FCLI Home folder are properly configured to disallow access by other users. Being stored in the user’s home directory by default, the correct file permissions should usually already be in place.
+To keep session state between fcli invocations, fcli stores session data like URL and authentication tokens in the link:#_fcli_home_folder[Fcli Home Folder]. To reduce the risk of unauthorized access to this sensitive data, fcli encrypts the session data files. However, this is not bullet-proof, as the encryption key and algorithm can be easily viewed in fcli source code. As such, it is recommended to ensure file permissions on the FCLI Home folder are properly configured to disallow access by other users. Being stored in the user's home directory by default, the correct file permissions should usually already be in place.
 
 Future fcli versions may provide enhancements to further improve protection of this sensitive data, for example by: 
 * Allowing the user to specify a custom encryption password through an environment variable, such that the session data can only be decrypted if the environment variable value is known 
@@ -169,14 +180,14 @@ also automatically generated log files in this home directory, if no `+--log-fil
 
 By default, the fcli home directory is located at `+<user home directory>/.fortify/fcli+`, but this can be overridden through the `+FORTIFY_HOME+` or `+FCLI_HOME+` environment variables. If the `+FCLI_HOME+` environment variable is set, then this will be used as the fcli home directory. If the `+FORTIFY_HOME+` environment variable is set (and `+FCLI_HOME+` is not set), then fcli will use `+<FORTIFY_HOME>/fcli+` as its home directory.
 
-When utilizing fcli in pipelines or automation scripts, especially when multiple pipelines or scripts may be running simultaneously on a single, non-containerized system, it is highly recommended to set the `+FCLI_HOME+` or `+FORTIFY_HOME+` environment variables to a dedicated directory for each individual pipeline/script run. Failure to do so may cause these runs to share session data, variables and other persistent fcli data, which will likely cause issues. For example, both pipelines may try to login with the same session name but with different URL’s or credentials, or even when using the same session configuration, one pipeline may log out of the session while the other pipeline is still using that session. Or, both pipelines may be updating the same fcli variable but with different contents, causing unexpected results when accessing those fcli variables. On containerized systems, like pipelines running in GitLab or GitHub, the fcli home folder will usually be stored inside the individual pipeline containers, so in this case it shouldn’t be necessary to set the `+FCLI_HOME+` or `+FORTIFY_HOME+` variables.
+When utilizing fcli in pipelines or automation scripts, especially when multiple pipelines or scripts may be running simultaneously on a single, non-containerized system, it is highly recommended to set the `+FCLI_HOME+` or `+FORTIFY_HOME+` environment variables to a dedicated directory for each individual pipeline/script run. Failure to do so may cause these runs to share session data, variables and other persistent fcli data, which will likely cause issues. For example, both pipelines may try to login with the same session name but with different URL's or credentials, or even when using the same session configuration, one pipeline may log out of the session while the other pipeline is still using that session. Or, both pipelines may be updating the same fcli variable but with different contents, causing unexpected results when accessing those fcli variables. On containerized systems, like pipelines running in GitLab or GitHub, the fcli home folder will usually be stored inside the individual pipeline containers, so in this case it shouldn't be necessary to set the `+FCLI_HOME+` or `+FORTIFY_HOME+` variables.
 
 Note that some files stored in the fcli home directory may contain sensitive data, like authentication tokens generated by login commands, or proxy credentials configured through the `+fcli config proxy+` commands. Fcli encrypts any sensitive files, but since the encryption key and algorithm are hardcoded, these files can be decrypted fairly easily. You should ensure proper file access permissions on the fcli home folder. In addition, you can consider setting the `+FCLI_ENCRYPT_KEY+` environment variable to configure an alternative encryption key. That way, the sensitive files can only be decrypted if someone has access to this customer encryption key.
 
 == Environment Variables
 
 Apart from the special-purpose environment variables described in other sections, like the link:#_fcli_home_folder[Fcli Home Folder] section, fcli allows for specifying default option and parameter values through
-environment variables. This is particularly useful for specifying product URL’s and credentials through pipeline secrets, but also allows for preventing having to manually supply command line options if you frequently invoke a particular command with the same option value(s). For example, you could define a default value for the `+fcli ssc appversion create --issue-template+` option, to avoid having to remember the issue template name every time you invoke this command.
+environment variables. This is particularly useful for specifying product URL's and credentials through pipeline secrets, but also allows for preventing having to manually supply command line options if you frequently invoke a particular command with the same option value(s). For example, you could define a default value for the `+fcli ssc appversion create --issue-template+` option, to avoid having to remember the issue template name every time you invoke this command.
 
 Fcli walks the command tree to find an environment variable that matches a particular option, starting with the most detailed command prefix first. For the issue-template example above, fcli would look for the following environment variable names, in this order: 
 
@@ -203,7 +214,7 @@ Despite #2 above, in some cases it may be useful to use less specific environmen
 
 This means that defining a single `+FCLI_DEFAULT_SSC_URL+` environment variable, together with for example `+FCLI_DEFAULT_SSC_USER+` and `+FCLI_DEFAULT_SSC_PASSWORD+` environment variables, allows for applying these default values to all of the `+fcli ssc session login+`, `+fcli sc-sast session login+`, `+fcli sc-dast session login+`, and corresponding `+logout+` commands.
 
-Note that as described in the link:#_env_prefix[–env-prefix] section, you can override the `+FCLI_DEFAULT+` prefix. For example, with `+--env-prefix MYPREFIX+`, fcli will look for `+MYPREFIX_*+` environment variables instead of `+FCLI_DEFAULT_*+` environment variables.
+Note that as described in the link:#_env_prefix[-env-prefix] section, you can override the `+FCLI_DEFAULT+` prefix. For example, with `+--env-prefix MYPREFIX+`, fcli will look for `+MYPREFIX_*+` environment variables instead of `+FCLI_DEFAULT_*+` environment variables.
 
 == Fcli Variables
 
@@ -226,7 +237,7 @@ Fcli supports two types of variables:
 ** As a best practice, question marks should be quoted to avoid the shell interpreting `+?+` as a file name wildcard (for example, if you have a file named `+x+` in the current directory, then `+--store ?+` would store a variable named `+x+` instead of the predefined variable name) 
 ** On most shells, you should be able to put the `+?+` in single or double quotes, or use `+\?+` 
 ** If you have any suggestions for a better syntax, please comment here: https://github.com/fortify-ps/fcli/issues/160 
-** Help output and manual pages may currently lack information about which commands and options support the `+'?'+` syntax, so for now you’ll need to look at examples or just try.
+** Help output and manual pages may currently lack information about which commands and options support the `+'?'+` syntax, so for now you'll need to look at examples or just try.
 
 Predefined variables are easier to use; they are more concise and you do not need to remember JSON property names. However, as indicated, they are more limited in use; they only store a predefined JSON property, and
 are only available on a subset of commands and options. 
@@ -291,7 +302,7 @@ When opening a bug report, please include the following information:
 * If you are experiencing an issue with the native binaries, please confirm whether the `+.jar+` version of fcli exhibits the same behavior 
 * Operating system and any other relevant environment details, for example: 
 ** Interactive or pipeline/automation use 
-** If pipeline use, what CI/CD system are you running fcli on (Jenkins, GitHub, GitLab, …) 
+** If pipeline use, what CI/CD system are you running fcli on (Jenkins, GitHub, GitLab, ...)
 ** What FCLI environment variables have been set 
 * Steps to reproduce 
 * Any other information that may be relevant

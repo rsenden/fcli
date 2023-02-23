@@ -59,7 +59,9 @@ when 'pygments'
 when 'highlightjs' %>
 <link rel="stylesheet" href="<%= attr 'highlightjsdir', 'http://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.4' %>/styles/<%= attr 'highlightjs-theme', 'googlecode' %>.min.css">
 <script src="<%= attr 'highlightjsdir', 'http://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.4' %>/highlight.min.js"></script>
-<script src="<%= attr 'highlightjsdir', 'http://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.4' %>/lang/common.min.js"></script>
+<script src="<%= attr 'highlightjsdir', 'http://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.4' %>/lang/bash.min.js"></script>
+<script src="<%= attr 'highlightjsdir', 'http://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.4' %>/lang/powershell.min.js"></script>
+<script src="<%= attr 'highlightjsdir', 'http://cdnjs.cloudflare.com/ajax/libs/highlight.js/7.4' %>/lang/java.min.js"></script>
 <script>hljs.initHighlightingOnLoad()</script><%
 when 'prettify' %>
 <link rel="stylesheet" href="<%= attr 'prettifydir', 'http://cdnjs.cloudflare.com/ajax/libs/prettify/r298' %>/<%= attr 'prettify-theme', 'prettify' %>.min.css">
@@ -83,6 +85,7 @@ MathJax.Hub.Config({
 <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
 <script>document.addEventListener('DOMContentLoaded', MathJax.Hub.TypeSet)</script><%
 end
+
 %><%= (docinfo_content = docinfo).empty? ? nil : %(
 #{docinfo_content}) %>
 </head>
