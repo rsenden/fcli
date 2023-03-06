@@ -1,1 +1,21 @@
-<div id="navbar-version">Version: {{ include.currentVersion }}</div>
+<div id="navbar-version">Version:
+<select name="versionselector" onchange="location = this.value;">
+ <option disabled>--Releases--</option>
+{% assign manpages_release = site.static_files | where: "manpage_release", true %}
+{% assign has_releaseDocs = manpages_release | first %}
+{% if has_releaseDocs %}
+{% for page in manpages_release %}
+ <option value="/fcli{{ page.path }}">{{ page.path | replace_first: "/", "" | split: "/" | first }}</option>
+{% endfor %}
+{% endif %}
+ <option disabled>--Development--</option>
+{% assign manpages_dev = site.static_files | where: "manpage_dev", true %}
+{% assign has_devDocs = manpages_dev | first %}
+{% if has_devDocs %}
+{% for page in manpages_dev %}
+ <option value="/fcli{{ page.path }}">{{ page.path | replace_first: "/", "" | split: "/" | first }} ]</option>
+{% endfor %}
+{% endif %}
+</select>
+
+</div>
