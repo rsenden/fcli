@@ -1,5 +1,5 @@
 <div id="navbar-version">
-  <span>Version: <span class="dropdown">{{ include.currentVersion}}</span></span>
+  <span>Version: </span><div class="dropdown">{{ include.currentVersion}}</div>
   <div class="dropdown-content"> 
     <span>-- Releases --</span>
 {% assign manpages_release = site.static_files | where: "manpage_release", true %}
