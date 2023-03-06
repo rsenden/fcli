@@ -1,5 +1,5 @@
 <div id="navbar-version">
-  <span>Version: </span><div class="dropdown">{{ include.currentVersion}}</div>
+  <span>Version: </span><div class="dropdown">{{ include.currentVersion}}
   <div class="dropdown-content"> 
     <span>-- Releases --</span>
 {% assign manpages_release = site.static_files | where: "manpage_release", true %}
@@ -17,6 +17,6 @@
     <a href="/fcli{{ page.path }}">{{ page.path | replace_first: "/", "" | split: "/" | first }}</a>
 {% endfor %}
 {% endif %}
-  </div>
+  </div></div>
 
 </div>
