@@ -92,7 +92,7 @@ otherwise no log will be written.
 === –log-file
 
 This option can be used on every fcli (sub-)command to specify the file to which to output log data. If not specified, currently no log data will be written, although future versions may specify a default log file
-location in the fcli home folder.
+location in the fcli data folder.
 
 === -o | –output
 
@@ -152,26 +152,42 @@ Fcli supports named sessions, allowing you to have multiple open sessions for a 
 * Run fcli commands against multiple instances of the same product, like DEV and PROD instances or an on-premise instance and a Fortify Hosted instance, without having to continuously login and logout from one instance to switch to another instance
 * Run fcli commands against a single instance of a product, but with alternating credentials, for example with one session providing admin rights and another session providing limited user rights 
 * Run one session with username/password credentials to allow access to all fcli functionality (based on user permissions), and another session with token-based authentication with access to only a subset of fcli functionality
-* Run multiple pipelines or automation scripts simultaneously, each with their own session name, to reduce chances of these pipelines and scripts affecting each other (see link:#_fcli_home_folder[Fcli Home Folder] though for a potentially better solution for this scenario)
+* Run multiple pipelines or automation scripts simultaneously, each with their own session name, to reduce chances of these pipelines and scripts affecting each other (see link:#_fcli_data_folder[Fcli Data Folder] though for a potentially better solution for this scenario)
 
 === Session Storage
 
-To keep session state between fcli invocations, fcli stores session data like URL and authentication tokens in the link:#_fcli_home_folder[Fcli Home Folder]. To reduce the risk of unauthorized access to this sensitive data, fcli encrypts the session data files. However, this is not bullet-proof, as the default encryption key and algorithm can be easily viewed in fcli source code. As such, it is recommended to ensure file permissions on the FCLI Home folder are properly configured to disallow access by other users. Being stored in the user’s home directory by default, the correct file permissions should usually already be in place. For enhanced security, you may also consider setting the `+FCLI_ENCRYPT_KEY+` environment variable; see the link:#_fcli_home_folder[Fcli Home Folder] section for details.
+To keep session state between fcli invocations, fcli stores session data like URL and authentication tokens in the link:#_fcli_data_folder[Fcli Data Folder]. To reduce the risk of unauthorized access to this sensitive data, fcli encrypts the session data files. However, this is not bullet-proof, as the default encryption key and algorithm can be easily viewed in fcli source code. As such, it is recommended to ensure file permissions on the fcli data folder are properly configured to disallow access by other users. Being stored in the user’s home directory by default, the correct file permissions should usually already be in place. For enhanced security, you may also consider setting the `+FCLI_ENCRYPT_KEY+` environment variable; see the link:#_fcli_data_folder[Fcli Data Folder] section for details.
 
-== Fcli Home Folder
+== Fcli Data Folder
 
-Fcli stores various files in its home directory, like session files (see link:#_session_management[Session Management]) and fcli variable contents (see link:#_fcli_variables[Fcli Variables]). Future versions of fcli may
-also automatically generated log files in this home directory, if no `+--log-file+` option is provided.
+By default, fcli stores configuration and state data like session files (see link:#_session_management[Session Management]), fcli variable contents (see link:#_fcli_variables[Fcli Variables]) and proxy settings in its data folder. Future versions of fcli may also automatically generated log files in this data directory, if no `+--log-file+` option is provided.
 
-By default, the fcli home directory is located at `+<user home directory>/.fortify/fcli+`, but this can be overridden through the `+FORTIFY_HOME+` or `+FCLI_HOME+` environment variables. If the `+FCLI_HOME+` environment variable is set, then this will be used as the fcli home directory. If the `+FORTIFY_HOME+` environment variable is set (and `+FCLI_HOME+` is not set), then fcli will use `+<FORTIFY_HOME>/fcli+` as its home directory.
+The locations of these files can be controller through the following environment variables:
 
-When utilizing fcli in pipelines or automation scripts, especially when multiple pipelines or scripts may be running simultaneously on a single, non-containerized system, it is highly recommended to set the `+FCLI_HOME+` or `+FORTIFY_HOME+` environment variables to a dedicated directory for each individual pipeline/script run. Failure to do so may cause these runs to share session data, variables and other persistent fcli data, which will likely cause issues. For example, both pipelines may try to login with the same session name but with different URL’s or credentials, or even when using the same session configuration, one pipeline may log out of the session while the other pipeline is still using that session. Or, both pipelines may be updating the same fcli variable but with different contents, causing unexpected results when accessing those fcli variables. On containerized systems, like pipelines running in GitLab or GitHub, the fcli home folder will usually be stored inside the individual pipeline containers, so in this case it shouldn’t be necessary to set the `+FCLI_HOME+` or `+FORTIFY_HOME+` variables.
+* `+FCLI_STATE_DIR+`: Location of fcli state like session and variable data. +
+  Default: `+<FCLI_DATA_DIR>/state+`
+* `+FCLI_CONFIG_DIR+`: Location of fcli configuration data like proxy and trust store settings. +
+  Default: `+<FCLI_DATA_DIR>/config+`
+* `+FCLI_DATA_DIR+`: Default base directory for the two directories listed above. +
+  Default: `+<FORTIFY_DATA_DIR>/fcli+`
+* `+FORTIFY_DATA_DIR+`: Default base directory for the directories listed above. +
+  Default: `+<user home directory>/.fortify+`
+  
+If none of these environment variables have been set, then state data will be stored in `+<user home directory>/.fortify/fcli/state+`, and configuration data will be stored in `+<user home directory>/.fortify/fcli/config+`.
 
-Note that some files stored in the fcli home directory may contain sensitive data, like authentication tokens generated by login commands, or proxy credentials configured through the `+fcli config proxy+` commands. Fcli encrypts any sensitive files, but since the encryption key and algorithm are hardcoded, these files can be decrypted fairly easily. You should ensure proper file access permissions on the fcli home folder. In addition, you can consider setting the `+FCLI_ENCRYPT_KEY+` environment variable to configure an alternative encryption key. That way, the sensitive files can only be decrypted if someone has access to this customer encryption key.
+Note: earlier versions of fcli used different environment variable names, but this was causing issues (see link:https://github.com/fortify/fcli/issues/248[Issue 248]). If you are using an older fcli version, please refer to the corresponding documentation. When upgrading fcli from an older version, you may need to adjust the environment variable names.
+
+When utilizing fcli in pipelines or automation scripts, especially when multiple pipelines or scripts may be running simultaneously on a single, non-containerized system, it is highly recommended to have each pipeline use a separate fcli state directory, to avoid those pipelines from sharing session data, variables and other persistent fcli state data. This will avoid issues like different pipelines overwriting each others session data (for example with different URLs or credentials), or one pipeline logging out of a session while another pipeline is still using the session.
+
+Depending on the situation, pipelines can either share fcli configuration data, or be configured to have different configuration data directories. When sharing the configuration data, it is recommended that these pipelines do not update any configuration data during pipeline execution, but rather use pre-configured settings. For example, you could pre-configure fcli with proxy and trust store settings.
+
+On containerized systems, like pipelines running in GitLab or GitHub, the default folders will usually be stored inside the individual pipeline containers and thus will not interfere with each others state.
+
+Note that some files stored in the fcli data directory may contain sensitive data, like authentication tokens generated by login commands, or proxy credentials configured through the `+fcli config proxy+` commands. Fcli encrypts any sensitive files, but since the encryption key and algorithm are hardcoded, these files can be decrypted fairly easily. You should ensure proper file access permissions on the fcli data folder. In addition, you can consider setting the `+FCLI_ENCRYPT_KEY+` environment variable to configure an alternative encryption key. That way, the sensitive files can only be decrypted if someone has access to this customer encryption key.
 
 == Environment Variables
 
-Apart from the special-purpose environment variables described in other sections, like the link:#_fcli_home_folder[Fcli Home Folder] section, fcli allows for specifying default option and parameter values through environment variables. This is particularly useful for specifying product URL’s and credentials through pipeline secrets, but also allows for preventing having to manually supply command line options if you frequently invoke a particular command with the same option value(s). For example, you could define a default value for the `+fcli ssc appversion create --issue-template+` option, to avoid having to remember the issue template name every time you invoke this command.
+Apart from the special-purpose environment variables described in other sections, like the link:#_fcli_data_folder[Fcli Data Folder] section, fcli allows for specifying default option and parameter values through environment variables. This is particularly useful for specifying product URL’s and credentials through pipeline secrets, but also allows for preventing having to manually supply command line options if you frequently invoke a particular command with the same option value(s). For example, you could define a default value for the `+fcli ssc appversion create --issue-template+` option, to avoid having to remember the issue template name every time you invoke this command.
 
 Fcli walks the command tree to find an environment variable that matches a particular option, starting with the most detailed command prefix first. For the issue-template example above, fcli would look for the following environment variable names, in this order: 
 
@@ -204,59 +220,46 @@ Note that as described in the link:#_env_prefix[–env-prefix] section, you can 
 
 Fcli allows for storing fcli output data in fcli variables for use by subsequent fcli commands. This is a powerful feature that prevents users from having to use shell features to parse fcli output when needing to provide output from one command as input to another command. For example, this feature allows for starting a scan, and then passing the scan id to a corresponding `+wait-for+` command, or for creating an SSC application version, and passing the SSC application version id to the `+appversion-artifact upload+` command.
 
-Fcli supports two types of variables: 
+Variables can be stored using the `+--store myVarName[:prop1,prop2]+` option on data output commands. If property names are specified, then only these property names will be stored. If no property names are provided, all available JSON properties will be stored.
 
-* Named variables 
-** Stored using the `+--store myVarName[:prop1,prop2]+` option on data output commands 
-** If no properties are provided with the `+--store+` option, all JSON properties will be stored 
-** Referenced using the `+'{?myVarName:prop1}'+` syntax anywhere on the command line of subsequent fcli commands 
-** As a best practice, variable references should be quoted to avoid the shell interpreting the curly braces 
-** On most shells, you should be able to put the variable reference in single quotes, or use `+\{+` 
-** If you have any suggestions for a better syntax, please comment here: https://github.com/fortify/fcli/issues/160 
-** Variable names are global and can be referenced across products and sessions 
-* Predefined variables: 
-** Stored using the `+--store '?'+` option on a subset of data output commands 
-** Stored under a command-specific predefined variable name 
-** Referenced using the `+'?'+` syntax on specific options 
-** As a best practice, question marks should be quoted to avoid the shell interpreting `+?+` as a file name wildcard (for example, if you have a file named `+x+` in the current directory, then `+--store ?+` would store a variable named `+x+` instead of the predefined variable name) 
-** On most shells, you should be able to put the `+?+` in single or double quotes, or use `+\?+` 
-** If you have any suggestions for a better syntax, please comment here: https://github.com/fortify/fcli/issues/160 
-** Help output and manual pages may currently lack information about which commands and options support the `+'?'+` syntax, so for now you’ll need to look at examples or just try.
+Variables can be referenced in subsequent fcli commands using the `::myVarName::prop` syntax anywhere on the command line; such occurrences will be substituted with the value of the given property name. 
 
-Predefined variables are easier to use; they are more concise and you do not need to remember JSON property names. However, as indicated, they are more limited in use; they only store a predefined JSON property, and
-are only available on a subset of commands and options. 
+Many (but not all) fcli commands will also store an entity-specific default property name when using the `+--store+` option. Whether a default property name has been stored can be seen in the output of the `+fcli state var def list+` command. If a default property name was stored, the `::myVarName::` syntax can be used to reference the value of the default property name, thereby avoiding the need to manually specify the appropriate property name.
 
 Following are some examples, assuming the necessary login sessions are available:
 
 [source,bash]
 ----
-fcli ssc appversion create myApp:1.0 --auto-required --skip-if-exists --store '?'
-fcli ssc appversion-artifact upload myScan.fpr --appversion '?'
+fcli ssc appversion create myApp:1.0 --auto-required --skip-if-exists --store myVersion
+fcli ssc appversion-artifact upload myScan.fpr --appversion ::myVersion::
 
 fcli ssc appversion create myApp:1.0 --auto-required --skip-if-exists --store myVersion:id,name
-fcli ssc appversion-artifact upload myScan.fpr --appversion {?myVersion:id}
+fcli ssc appversion-artifact upload myScan.fpr --appversion ::myVersion::id
 
-fcli sc-dast scan start MyScan -S 011daf6b-f2d0-4127-89ab-1d3cebab8784 --store '?'
-fcli sc-dast scan wait-for '?'
+fcli sc-sast scan start -p package.zip -v 22.2 --appversion test:1.0 --store x
+fcli sc-sast scan wait-for ::x::
 
-fcli sc-dast scan start MyScan -S 011daf6b-f2d0-4127-89ab-1d3cebab8784 --store myScan
-fcli sc-dast scan wait-for {?myScan:id}
+fcli sc-sast scan start -p package.zip -v 22.2 --appversion test:1.0 --store x
+fcli sc-sast scan wait-for ::x::jobToken
 ----
 
 Fcli provides dedicated commands for managing variables and variable contents through the following commands; please see help output or manual pages for available sub-commands: 
 
-* `+fcli config variable definition+` * `+fcli config variable contents+`
+* `+fcli state variable definition+` 
+* `+fcli state variable contents+`
 
-Note that the `+fcli config variable contents+` `+get+` and `+list+` commands support the regular fcli output options, and the `+list+` command also provides query capabilities. This allows for advanced use
+Note that the `+fcli state variable contents+` `+get+` and `+list+` commands support the regular fcli output options, and the `+list+` command also provides query capabilities. This allows for advanced use
 cases, like retrieving server data once and then outputting it in multiple formats, potentially even applying separate filters. As an example:
 
 [source,bash]
 ----
 fcli ssc appversion list --store myVersions
-fcli config variable contents list myVersions -o csv --output-to-file myVersions.csv
-fcli config variable contents list myVersions -o json -q createdBy=admin --output-to-file myAdminVersions.json
-fcli config variable contents list myVersions -o 'expr={id}\n' --output-to-file myVersionIds.txt
+fcli state variable contents list myVersions -o csv --output-to-file myVersions.csv
+fcli state variable contents list myVersions -o json -q createdBy=admin --output-to-file myAdminVersions.json
+fcli state variable contents list myVersions -o 'expr={id}\n' --output-to-file myVersionIds.txt
 ----
+
+Note: variable-related syntax and behavior was changed in fcli version 2.0.0. If you are using an older fcli version, please refer to the documentation for that version. When upgrading from 1.x.x to 2.x.x, you may need to update your fcli invocations to match the new syntax. See link:https://github.com/fortify/fcli/issues/160[Issue 160] for information on why syntax and behavior was changed.
 
 == Manual Pages
 

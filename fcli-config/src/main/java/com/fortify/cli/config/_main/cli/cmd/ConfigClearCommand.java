@@ -20,6 +20,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
+//TODO Remove code duplication between this class and StateClearCommand
 @Command(name = BasicOutputHelperMixins.Clear.CMD_NAME)
 public class ConfigClearCommand extends AbstractBasicOutputCommand implements IActionCommandResultSupplier {
     private static final ObjectMapper objectMapper = JsonHelper.getObjectMapper();
@@ -30,15 +31,15 @@ public class ConfigClearCommand extends AbstractBasicOutputCommand implements IA
     protected JsonNode getJsonNode() {
         ArrayNode result = objectMapper.createArrayNode();
         try {
-            if ( FcliHomeHelper.getFcliHomePath().toFile().exists() ) {
-                Files.walk(FcliHomeHelper.getFcliHomePath())
+            if ( FcliHomeHelper.getFcliConfigPath().toFile().exists() ) {
+                Files.walk(FcliHomeHelper.getFcliConfigPath())
                     .sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
                     .peek(f->addResult(result,f))
                     .forEach(File::delete);
             }
         } catch ( IOException e ) {
-            throw new RuntimeException("Error clearing fcli home directory", e);
+            throw new RuntimeException("Error clearing fcli configuration directory", e);
         }
         return result;
     }
