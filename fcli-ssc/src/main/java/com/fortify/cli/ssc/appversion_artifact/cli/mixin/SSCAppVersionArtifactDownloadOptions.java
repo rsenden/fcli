@@ -22,31 +22,15 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.cli.state.variable.cli.cmd;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fortify.cli.common.output.cli.cmd.basic.AbstractBasicOutputCommand;
-import com.fortify.cli.common.output.cli.mixin.BasicOutputHelperMixins;
-import com.fortify.cli.state.variable.cli.mixin.VariableResolverMixin;
+package com.fortify.cli.ssc.appversion_artifact.cli.mixin;
 
 import io.micronaut.core.annotation.ReflectiveAccess;
 import lombok.Getter;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Mixin;
+import picocli.CommandLine.Option;
 
-@ReflectiveAccess
-@Command(name = BasicOutputHelperMixins.Get.CMD_NAME)
-public class VariableDefinitionGetCommand extends AbstractBasicOutputCommand {
-    @Getter @Mixin private BasicOutputHelperMixins.Get outputHelper;
-    @Mixin private VariableResolverMixin.PositionalParameter variableResolver;
-
-    @Override
-    public JsonNode getJsonNode() {
-        return variableResolver.getVariableDescriptor().asJsonNode();
-    }
-    
-    @Override
-    public boolean isSingular() {
-        return true;
-    }
+@ReflectiveAccess @Getter
+public class SSCAppVersionArtifactDownloadOptions {
+    @Option(names = {"-f", "--dest"}, descriptionKey = "download.destination")
+    private String destination;
+    @Option(names = "--no-include-sources", negatable = true, descriptionKey = "download.no-include-sources") private boolean includeSources = true;
 }

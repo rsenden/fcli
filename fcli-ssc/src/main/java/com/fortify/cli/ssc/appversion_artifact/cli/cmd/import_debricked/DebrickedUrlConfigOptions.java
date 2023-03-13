@@ -22,30 +22,24 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.cli.state.variable.cli.cmd;
+package com.fortify.cli.ssc.appversion_artifact.cli.cmd.import_debricked;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fortify.cli.common.output.cli.cmd.basic.AbstractBasicOutputCommand;
-import com.fortify.cli.common.output.cli.mixin.BasicOutputHelperMixins;
-import com.fortify.cli.common.variable.FcliVariableHelper;
+import com.fortify.cli.common.rest.runner.config.IUrlConfig;
 
 import io.micronaut.core.annotation.ReflectiveAccess;
 import lombok.Getter;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Mixin;
+import picocli.CommandLine.Option;
 
 @ReflectiveAccess
-@Command(name = BasicOutputHelperMixins.List.CMD_NAME)
-public class VariableDefinitionListCommand extends AbstractBasicOutputCommand {
-    @Getter @Mixin private BasicOutputHelperMixins.List outputHelper;
-
-    @Override
-    public JsonNode getJsonNode() {
-        return FcliVariableHelper.listDescriptors();
-    }
+public class DebrickedUrlConfigOptions implements IUrlConfig {
+	// For now, this option is hidden as there is only the single debricked.com SaaS instance
+    @Option(names = {"--debricked-url"}, required = true, order=1, defaultValue = "https://debricked.com", hidden = true)
+    @Getter private String url;
     
-    @Override
-    public boolean isSingular() {
-        return false;
+    @Option(names = {"--insecure", "-k"}, required = false, description = "Disable SSL checks", defaultValue = "false", order=6)
+    @Getter private Boolean insecureModeEnabled;
+    
+    public boolean hasUrlConfig() {
+        return url!=null;
     }
 }

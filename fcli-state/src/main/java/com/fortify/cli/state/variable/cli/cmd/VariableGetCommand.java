@@ -22,40 +22,31 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.cli.ssc.appversion_artifact.cli.cmd.purge;
+package com.fortify.cli.state.variable.cli.cmd;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fortify.cli.common.output.cli.cmd.unirest.IUnirestJsonNodeSupplier;
-import com.fortify.cli.common.output.spi.transform.IActionCommandResultSupplier;
-import com.fortify.cli.ssc.appversion_artifact.cli.cmd.AbstractSSCAppVersionArtifactOutputCommand;
-import com.fortify.cli.ssc.appversion_artifact.cli.mixin.SSCAppVersionArtifactResolverMixin;
-import com.fortify.cli.ssc.appversion_artifact.helper.SSCAppVersionArtifactHelper;
-import com.fortify.cli.ssc.output.cli.mixin.SSCOutputHelperMixins;
+import com.fortify.cli.common.output.cli.cmd.basic.AbstractBasicOutputCommand;
+import com.fortify.cli.state.variable.cli.mixin.VariableOutputHelperMixins;
+import com.fortify.cli.state.variable.cli.mixin.VariableResolverMixin;
 
 import io.micronaut.core.annotation.ReflectiveAccess;
-import kong.unirest.UnirestInstance;
 import lombok.Getter;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 
 @ReflectiveAccess
-@Command(name = SSCOutputHelperMixins.ArtifactPurgeById.CMD_NAME)
-public class SSCAppVersionArtifactPurgeByIdCommand extends AbstractSSCAppVersionArtifactOutputCommand implements IUnirestJsonNodeSupplier, IActionCommandResultSupplier {
-    @Getter @Mixin private SSCOutputHelperMixins.ArtifactPurgeById outputHelper;
-    @Mixin private SSCAppVersionArtifactResolverMixin.PositionalParameter artifactResolver;
-    
+@Command(name = VariableOutputHelperMixins.Get.CMD_NAME)
+public class VariableGetCommand extends AbstractBasicOutputCommand {
+    @Getter @Mixin private VariableOutputHelperMixins.Get outputHelper;
+    @Mixin private VariableResolverMixin.PositionalParameter variableResolver;
+
     @Override
-    public JsonNode getJsonNode(UnirestInstance unirest) {
-        return SSCAppVersionArtifactHelper.purge(unirest, artifactResolver.getArtifactDescriptor(unirest)).asJsonNode();
+    public JsonNode getJsonNode() {
+        return variableResolver.getVariableDescriptor().asJsonNode();
     }
     
     @Override
     public boolean isSingular() {
         return true;
-    }
-    
-    @Override
-    public String getActionCommandResult() {
-        return "PURGE_REQUESTED";
     }
 }

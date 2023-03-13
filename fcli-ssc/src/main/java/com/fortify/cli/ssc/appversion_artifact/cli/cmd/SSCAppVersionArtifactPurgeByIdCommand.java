@@ -22,24 +22,39 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.cli.ssc.appversion_artifact.cli.cmd.imprt.debricked;
+package com.fortify.cli.ssc.appversion_artifact.cli.cmd;
 
-import com.fortify.cli.common.rest.runner.config.IUrlConfig;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fortify.cli.common.output.cli.cmd.unirest.IUnirestJsonNodeSupplier;
+import com.fortify.cli.common.output.spi.transform.IActionCommandResultSupplier;
+import com.fortify.cli.ssc.appversion_artifact.cli.mixin.SSCAppVersionArtifactResolverMixin;
+import com.fortify.cli.ssc.appversion_artifact.helper.SSCAppVersionArtifactHelper;
+import com.fortify.cli.ssc.output.cli.mixin.SSCOutputHelperMixins;
 
 import io.micronaut.core.annotation.ReflectiveAccess;
+import kong.unirest.UnirestInstance;
 import lombok.Getter;
-import picocli.CommandLine.Option;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Mixin;
 
 @ReflectiveAccess
-public class DebrickedUrlConfigOptions implements IUrlConfig {
-	// For now, this option is hidden as there is only the single debricked.com SaaS instance
-    @Option(names = {"--debricked-url"}, required = true, order=1, defaultValue = "https://debricked.com", hidden = true)
-    @Getter private String url;
+@Command(name = SSCOutputHelperMixins.ArtifactPurgeById.CMD_NAME)
+public class SSCAppVersionArtifactPurgeByIdCommand extends AbstractSSCAppVersionArtifactOutputCommand implements IUnirestJsonNodeSupplier, IActionCommandResultSupplier {
+    @Getter @Mixin private SSCOutputHelperMixins.ArtifactPurgeById outputHelper;
+    @Mixin private SSCAppVersionArtifactResolverMixin.PositionalParameter artifactResolver;
     
-    @Option(names = {"--insecure", "-k"}, required = false, description = "Disable SSL checks", defaultValue = "false", order=6)
-    @Getter private Boolean insecureModeEnabled;
+    @Override
+    public JsonNode getJsonNode(UnirestInstance unirest) {
+        return SSCAppVersionArtifactHelper.purge(unirest, artifactResolver.getArtifactDescriptor(unirest)).asJsonNode();
+    }
     
-    public boolean hasUrlConfig() {
-        return url!=null;
+    @Override
+    public boolean isSingular() {
+        return true;
+    }
+    
+    @Override
+    public String getActionCommandResult() {
+        return "PURGE_REQUESTED";
     }
 }

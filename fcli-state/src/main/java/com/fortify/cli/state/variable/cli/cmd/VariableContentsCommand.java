@@ -22,10 +22,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.cli.sc_dast.scan.cli.cmd.action.retry;
+package com.fortify.cli.state.variable.cli.cmd;
 
-import com.fortify.cli.sc_dast.output.cli.mixin.SCDastOutputHelperMixins;
-import com.fortify.cli.sc_dast.scan.cli.cmd.action.AbstractSCDastScanActionCommand;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fortify.cli.common.output.cli.cmd.basic.AbstractBasicOutputCommand;
+import com.fortify.cli.state.variable.cli.mixin.VariableOutputHelperMixins;
+import com.fortify.cli.state.variable.cli.mixin.VariableResolverMixin;
 
 import io.micronaut.core.annotation.ReflectiveAccess;
 import lombok.Getter;
@@ -33,12 +35,18 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 
 @ReflectiveAccess
-@Command(name = "import-findings")
-public class SCDastScanRetryImportFindingsCommand extends AbstractSCDastScanActionCommand {
-@Getter @Mixin private SCDastOutputHelperMixins.ScanAction outputHelper;
+@Command(name = VariableOutputHelperMixins.Contents.CMD_NAME)
+public class VariableContentsCommand extends AbstractBasicOutputCommand {
+    @Getter @Mixin private VariableOutputHelperMixins.Contents outputHelper;
+    @Mixin private VariableResolverMixin.PositionalParameter variableResolver;
+
+    @Override
+    public JsonNode getJsonNode() {
+        return variableResolver.getVariableContents();
+    }
     
     @Override
-    protected SCDastScanAction getAction() {
-        return SCDastScanAction.RetryImportScanFindings;
+    public boolean isSingular() {
+        return variableResolver.getVariableDescriptor().isSingular();
     }
 }

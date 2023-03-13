@@ -22,10 +22,13 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.cli.sc_dast.scan.cli.cmd.action.retry;
+package com.fortify.cli.state.variable.cli.cmd;
 
-import com.fortify.cli.sc_dast.output.cli.mixin.SCDastOutputHelperMixins;
-import com.fortify.cli.sc_dast.scan.cli.cmd.action.AbstractSCDastScanActionCommand;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fortify.cli.common.output.cli.cmd.basic.AbstractBasicOutputCommand;
+import com.fortify.cli.common.output.spi.transform.IActionCommandResultSupplier;
+import com.fortify.cli.common.variable.FcliVariableHelper;
+import com.fortify.cli.state.variable.cli.mixin.VariableOutputHelperMixins;
 
 import io.micronaut.core.annotation.ReflectiveAccess;
 import lombok.Getter;
@@ -33,12 +36,24 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 
 @ReflectiveAccess
-@Command(name = "import-results")
-public class SCDastScanRetryImportResultsCommand extends AbstractSCDastScanActionCommand {
-    @Getter @Mixin private SCDastOutputHelperMixins.ScanAction outputHelper;
+@Command(name = VariableOutputHelperMixins.DeleteAll.CMD_NAME)
+public class VariableDeleteAllCommand extends AbstractBasicOutputCommand implements IActionCommandResultSupplier {
+    @Getter @Mixin private VariableOutputHelperMixins.DeleteAll outputHelper;
+
+    @Override
+    public JsonNode getJsonNode() {
+        JsonNode descriptors = FcliVariableHelper.listDescriptors();
+        descriptors.forEach(FcliVariableHelper::delete);
+        return descriptors;
+    }
     
     @Override
-    protected SCDastScanAction getAction() {
-        return SCDastScanAction.RetryImportScanResults;
+    public String getActionCommandResult() {
+        return "DELETED";
+    }
+    
+    @Override
+    public boolean isSingular() {
+        return false;
     }
 }

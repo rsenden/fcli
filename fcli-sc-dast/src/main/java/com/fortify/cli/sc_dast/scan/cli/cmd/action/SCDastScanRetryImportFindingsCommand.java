@@ -22,12 +22,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.cli.state.variable.cli.cmd;
+package com.fortify.cli.sc_dast.scan.cli.cmd.action;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fortify.cli.common.output.cli.cmd.basic.AbstractBasicOutputCommand;
-import com.fortify.cli.common.output.cli.mixin.BasicOutputHelperMixins;
-import com.fortify.cli.state.variable.cli.mixin.VariableResolverMixin;
+import com.fortify.cli.sc_dast.output.cli.mixin.SCDastOutputHelperMixins;
 
 import io.micronaut.core.annotation.ReflectiveAccess;
 import lombok.Getter;
@@ -35,18 +32,12 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 
 @ReflectiveAccess
-@Command(name = BasicOutputHelperMixins.List.CMD_NAME)
-public class VariableContentsListCommand extends AbstractBasicOutputCommand {
-    @Getter @Mixin private BasicOutputHelperMixins.List outputHelper;
-    @Mixin private VariableResolverMixin.PositionalParameter variableResolver;
-
-    @Override
-    public JsonNode getJsonNode() {
-        return variableResolver.getVariableContents(); // TODO Check that variable represents an ArrayNode?
-    }
+@Command(name = "retry-import-findings")
+public class SCDastScanRetryImportFindingsCommand extends AbstractSCDastScanActionCommand {
+@Getter @Mixin private SCDastOutputHelperMixins.ScanAction outputHelper;
     
     @Override
-    public boolean isSingular() {
-        return false;
+    protected SCDastScanAction getAction() {
+        return SCDastScanAction.RetryImportScanFindings;
     }
 }
