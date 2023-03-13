@@ -22,10 +22,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
  * IN THE SOFTWARE.
  ******************************************************************************/
-package com.fortify.cli.sc_dast.scan.cli.cmd.action.retry;
+package com.fortify.cli.sc_dast.scan.cli.cmd.action;
 
 import com.fortify.cli.sc_dast.output.cli.mixin.SCDastOutputHelperMixins;
-import com.fortify.cli.sc_dast.scan.cli.cmd.action.AbstractSCDastScanActionCommand;
 
 import io.micronaut.core.annotation.ReflectiveAccess;
 import lombok.Getter;
@@ -33,12 +32,12 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 
 @ReflectiveAccess
-@Command(name = "import-findings")
-public class SCDastScanRetryImportFindingsCommand extends AbstractSCDastScanActionCommand {
-@Getter @Mixin private SCDastOutputHelperMixins.ScanAction outputHelper;
+@Command(name = "publish")
+public class SCDastScanPublishCommand extends AbstractSCDastScanActionCommand {
+    @Getter @Mixin private SCDastOutputHelperMixins.ScanAction outputHelper;
     
     @Override
     protected SCDastScanAction getAction() {
-        return SCDastScanAction.RetryImportScanFindings;
+        return SCDastScanAction.RetryImportScanResults;
     }
 }

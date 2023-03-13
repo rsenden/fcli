@@ -5,8 +5,9 @@ import com.fortify.cli.common.variable.DefaultVariablePropertyName;
 import com.fortify.cli.sc_dast.scan.cli.cmd.action.SCDastScanCompleteCommand;
 import com.fortify.cli.sc_dast.scan.cli.cmd.action.SCDastScanDeleteCommand;
 import com.fortify.cli.sc_dast.scan.cli.cmd.action.SCDastScanPauseCommand;
+import com.fortify.cli.sc_dast.scan.cli.cmd.action.SCDastScanPublishCommand;
 import com.fortify.cli.sc_dast.scan.cli.cmd.action.SCDastScanResumeCommand;
-import com.fortify.cli.sc_dast.scan.cli.cmd.action.retry.SCDastScanRetryCommands;
+import com.fortify.cli.sc_dast.scan.cli.cmd.action.SCDastScanRetryImportFindingsCommand;
 
 import picocli.CommandLine.Command;
 
@@ -19,8 +20,9 @@ import picocli.CommandLine.Command;
                 SCDastScanGetCommand.class,
                 SCDastScanListCommand.class,
                 SCDastScanPauseCommand.class,
+                SCDastScanPublishCommand.class,
                 SCDastScanResumeCommand.class,
-                SCDastScanRetryCommands.class,
+                SCDastScanRetryImportFindingsCommand.class,
                 SCDastScanStartCommand.class,
                 SCDastScanWaitForCommand.class
         }
